@@ -102,7 +102,8 @@ bool login()
     infile.close();
     Sleep(2000);
     return false;
- }class Employee {
+ }
+class Employee {
 protected:
     int id;
     string name;
@@ -471,8 +472,9 @@ public:
     }
 };
 int main() {
-     Login log;
-bool loggedIn = false;
+    Login log;
+    PayrollSystem payroll;
+    bool loggedIn = false;
 
     while (!loggedIn) {
         system("cls");
@@ -495,5 +497,57 @@ bool loggedIn = false;
             cout << "Invalid choice! Try again.\n";
         }
     }
+    int option;
+    do {
+        system("cls");
+        cout << "\nPayroll System Menu:\n";
+        cout << "1. Add Employee\n";
+        cout << "2. Display All Employees\n";
+        cout << "3. Update Employee\n";
+        cout << "4. Delete Employee\n";
+        cout << "5. Logout\n";
+        cout << "Enter your choice: ";
+        cin >> option;
+
+        switch (option) {
+        case 1: {
+            int id;
+            string name;
+            double hourlyRate, hoursWorked;
+            cout << "Enter ID: ";
+            cin >> id;
+            cin.ignore();
+            cout << "Enter Name: ";
+            getline(cin, name);
+            cout << "Enter Hourly Rate: ";
+            cin >> hourlyRate;
+            cout << "Enter Hours Worked: ";
+            cin >> hoursWorked;
+            payroll.addEmployee(id, name, hourlyRate, hoursWorked);
+            break;
+        }
+        case 2:
+            payroll.displayPayroll();
+            break;
+        case 3:
+            payroll.updateEmployee();
+            break;
+        case 4: {
+            int id;
+            cout << "Enter Employee ID to Delete: ";
+            cin >> id;
+            payroll.deleteEmployee(id);
+            break;
+        }
+        case 5:
+            loggedIn = false;
+            break;
+        default:
+            cout << "Invalid choice! Try again.\n";
+        }
+        system("pause");
+    } while (option != 5);
+
+    return 0;
 }
 
