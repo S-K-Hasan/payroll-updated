@@ -271,7 +271,205 @@ public:
              << setw(15) << calculateSalary() << setw(15) << type << setw(15) << level << endl;
     }
 };
+class PayrollSystem {
+private:
+    vector<Employee*> employees;
 
+    void saveToFile() {
+        ofstream outFile("employees.txt");
+        for (const auto& emp : employees) {
+            outFile << emp->toFileString() << endl;
+        }
+        outFile.close();
+    }
+
+    void loadFromFile() {
+        ifstream inFile("employees.txt");
+        if (inFile.is_open()) {
+            string line;
+            while (getline(inFile, line)) {
+                Employee* emp = Employee::fromFileString(line);
+                if (emp) {
+                    employees.push_back(emp);
+                }
+            }
+            inFile.close();
+        }
+    }
+
+public:
+     ~PayrollSystem() {
+
+        for (auto& emp : employees) {
+            delete emp;
+        }
+        employees.clear();
+    }
+
+    PayrollSystem() {
+        loadFromFile();
+    }
+
+    void addEmployee(int id, string name, double hourlyRate, double hoursWorked) {
+        Employee* newEmployee = nullptr;
+        string type, level;
+        cout << "Enter Employee Type (full-time, part-time, intern): ";
+        cin >> type;
+        cout << "Enter Experience Level (entry, senior): ";
+        cin >> level;
+
+        if (type == "full-time")
+        {
+            if (level=="entry")
+            {
+                newEmployee = new FullTimeEmployee(id,name,hourlyRate,hoursWorked,"Entry-Level");
+            }
+            else if (level=="senior")
+            {
+                newEmployee=new FullTimeEmployee(id,name,hourlyRate,hoursWorked,"Senior-Level");
+            }
+            else
+            {
+                newEmployee=new FullTimeEmployee(id,name,hourlyRate,hoursWorked,level);
+            }
+        }
+        else if (type=="part-time")
+        {
+           if (level=="entry")
+            {
+                newEmployee = new PartTimeEmployee(id,name,hourlyRate,hoursWorked,"Entry-Level");
+            }
+            else if (level=="senior")
+            {
+                newEmployee=new PartTimeEmployee(id,name,hourlyRate,hoursWorked,"Senior-Level");
+            }
+            else
+            {
+                newEmployee=new PartTimeEmployee(id,name,hourlyRate,hoursWorked,level);
+            }
+        }
+        else if (type=="intern")
+        {
+            if (level=="entry")
+            {
+                newEmployee = new InternEmployee(id,name,hourlyRate,hoursWorked,"Entry-Level");
+            }
+            else if (level=="senior")
+            {
+                newEmployee=new InternEmployee(id,name,hourlyRate,hoursWorked,"Senior-Level");
+            }
+            else
+            {
+                newEmployee=new InternEmployee(id,name,hourlyRate,hoursWorked,level);
+            }
+        }
+
+        if (newEmployee)
+        {
+            employees.push_back(newEmployee);
+            saveToFile();
+            cout<<"Employee added successfully!\n";
+        }
+        else
+        {
+            cout<<"Invalid employee type or level!\n";
+        }
+    }
+
+    void displayPayroll() {
+        cout<<left<<setw(10)<<"ID"<<setw(20)<<"Name"<<setw(15)<<"Hourly Rate"
+             << setw(15)<<"Hours Worked"<<setw(15)<<"Salary"<<setw(15)<<"Type"<<setw(15)<<"Level"<< endl;
+        for (const auto& emp : employees)
+        {
+            emp->displayDetails();
+        }
+    }
+
+ void updateEmployee() {
+    int id;
+    cout<<"Enter Employee ID to Update: ";
+    cin>>id;
+
+    for (auto& emp:employees) {
+        if (emp->getId()==id)
+        {
+            double rate,hours;
+            string type,level;
+
+            cout<<"Enter New Hourly Rate: ";
+            cin>>rate;
+            emp->setHourlyRate(rate);
+
+            cout<<"Enter New Hours Worked: ";
+            cin>>hours;
+            emp->setHoursWorked(hours);
+
+            cout<<"Enter New Employee Type (full-time, part-time, intern): ";
+            cin>>type;
+            emp->setType(type);
+
+            cout<<"Enter New Experience Level (entry, senior): ";
+            cin>>level;
+            emp->setLevel(level);
+
+            if(type=="full-time")
+            {
+                if (level=="entry") {
+                    *emp=FullTimeEmployee(id, emp->getName(),rate,hours,"Entry-Level");
+                }
+                else if (level=="senior") {
+                    *emp=FullTimeEmployee(id, emp->getName(),rate,hours,"Senior-Level");
+                }
+                else {
+                    *emp=FullTimeEmployee(id,emp->getName(),rate,hours,level);
+                }
+            }
+            else if(type=="part-time")
+            {
+               if (level=="entry") {
+                    *emp=PartTimeEmployee(id, emp->getName(),rate,hours,"Entry-Level");
+                }
+                else if (level=="senior") {
+                    *emp=PartTimeEmployee(id, emp->getName(),rate,hours,"Senior-Level");
+                }
+                else {
+                    *emp=PartTimeEmployee(id,emp->getName(),rate,hours,level);
+                }
+            }
+            else if(type=="intern")
+            {
+                if (level=="entry") {
+                    *emp=InternEmployee(id, emp->getName(),rate,hours,"Entry-Level");
+                }
+                else if (level=="senior") {
+                    *emp=InternEmployee(id, emp->getName(),rate,hours,"Senior-Level");
+                }
+                else {
+                    *emp=InternEmployee(id,emp->getName(),rate,hours,level);
+                }
+            }
+
+            saveToFile();
+            cout << "Employee updated successfully!\n";
+            return;
+        }
+    }
+    cout << "Employee not found!\n";
+}
+    void deleteEmployee(int id) {
+        for (auto it = employees.begin(); it != employees.end(); ++it) {
+            if ((*it)->getId()==id)
+            {
+                delete *it;
+                employees.erase(it);
+                saveToFile();
+                cout << "Employee deleted successfully!\n";
+                return;
+            }
+        }
+        cout << "Employee not found!\n";
+    }
+};
 int main() {
      Login log;
 bool loggedIn = false;
